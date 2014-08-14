@@ -18,11 +18,11 @@ module UUIDTools
     end
 
     def as_json(options = nil)
-      hexdigest.upcase
+      self.to_s
     end
 
     def to_param
-      hexdigest.upcase
+      self.to_s
     end
 
     def self.serialize(value)
