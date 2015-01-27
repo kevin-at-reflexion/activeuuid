@@ -151,7 +151,18 @@ module ActiveUUID
       end
     end
 
+    def self.load_adapters(*adapters)
+      adapters.each do |adapter|
+        begin
+          require "active_record/connection_adapters/#{adapter}_adapter"
+        rescue LoadError
+        end
+      end
+    end
+
     def self.apply!
+      self.load_adapters 'mysql2', 'sqlite3', 'postgresql'
+
       ActiveRecord::ConnectionAdapters::Table.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::Table
       ActiveRecord::ConnectionAdapters::TableDefinition.send :include, Migrations if defined? ActiveRecord::ConnectionAdapters::TableDefinition
 
