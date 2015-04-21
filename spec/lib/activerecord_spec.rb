@@ -1,5 +1,6 @@
 require 'spec_helper'
 
+# TODO(Kevin): Use newer 'expect' style syntax
 describe ActiveRecord::Base do
   context '.connection' do
     let!(:connection) { ActiveRecord::Base.connection }
@@ -181,41 +182,21 @@ describe UuidArticle do
     context 'non-primary' do
       before { article.another_uuid = string }
       specify do
-        article.another_uuid.should == uuid
-        article.another_uuid_before_type_cast.should == string
+        expect(article.another_uuid).to eq uuid
+        expect(article.another_uuid_before_type_cast).to eq string
       end
       specify do
-        article.another_uuid_before_type_cast.should == string
-        article.another_uuid.should == uuid
+        expect(article.another_uuid_before_type_cast).to eq string
+        expect(article.another_uuid).to eq uuid
       end
       specify do
         article.save
         article.reload
-        article.another_uuid_before_type_cast.should == string
-        article.another_uuid.should == uuid
+
+        # NOTE(Kevin): No need to translate the raw-bytes to a string; its wasteful
+        expect(article.another_uuid_before_type_cast).to be_a LazyUUID
+        expect(article.another_uuid).to eq uuid
       end
     end
   end
 end
-
-describe UuidArticleWithNaturalKey do
-  let!(:article) { Fabricate :uuid_article_with_natural_key }
-  let!(:id) { article.id }
-  let!(:uuid) { UUIDTools::UUID.sha1_create(UUIDTools::UUID_OID_NAMESPACE, article.title) }
-  subject { article }
-  context 'natural_key' do
-    its(:id) { should == uuid }
-  end
-end
-
-describe UuidArticleWithNamespace do
-  let!(:article) { Fabricate :uuid_article_with_namespace }
-  let!(:id) { article.id }
-  let!(:namespace) { UuidArticleWithNamespace._uuid_namespace }
-  let!(:uuid) { UUIDTools::UUID.sha1_create(namespace, article.title) }
-  subject { article }
-  context 'natural_key_with_namespace' do
-    its(:id) { should == uuid }
-  end
-end
-

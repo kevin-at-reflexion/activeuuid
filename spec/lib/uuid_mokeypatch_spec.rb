@@ -1,30 +1,37 @@
 require 'spec_helper'
 
 describe UUIDTools::UUID do
-  let(:input) { "e4618518-cb9f-11e1-aa7c-14dae903e06a" }
-  let(:hex) { "E4618518CB9F11E1AA7C14DAE903E06A" }
+  let(:input) { 'e4618518-cb9f-11e1-aa7c-14dae903e06a' }
   let(:uuid) { described_class.parse input }
 
-  context 'instance methods' do
-    subject { uuid }
-    let(:sql_out) { "x'e4618518cb9f11e1aa7c14dae903e06a'" }
+  describe '#as_json' do
+    subject { uuid.as_json }
+    it { is_expected.to eq input }
+  end
 
-    its(:quoted_id) {should == sql_out}
-    its(:as_json) {should == hex}
-    its(:to_param) {should == hex}
-    its(:next) {should be_a(described_class)}
+  describe '#to_param' do
+    subject { uuid.as_json }
+    it { is_expected.to eq input }
+  end
+
+  describe '#quoted_id' do
+    subject { uuid.quoted_id }
+    it { is_expected.to eq "x'e4618518cb9f11e1aa7c14dae903e06a'" }
   end
 
   describe '.serialize' do
     subject { described_class }
     let(:raw) { uuid.raw }
+    let(:hex) { uuid.hexdigest }
+    let(:lazy) { LazyUUID.new(raw) }
 
-    specify { subject.serialize(uuid).should == uuid }
-    specify { subject.serialize(input).should == uuid }
-    specify { subject.serialize(hex).should == uuid }
-    specify { subject.serialize(raw).should == uuid }
-    specify { subject.serialize(nil).should be_nil }
-    specify { subject.serialize('').should be_nil }
-    specify { subject.serialize(5).should be_nil }
+    specify { expect(subject.serialize(input)).to eq uuid }
+    specify { expect(subject.serialize(uuid)).to eq uuid }
+    specify { expect(subject.serialize(lazy)).to eq uuid }
+    specify { expect(subject.serialize(hex)).to eq uuid }
+    specify { expect(subject.serialize(raw)).to eq uuid }
+    specify { expect(subject.serialize(nil)).to be_nil }
+    specify { expect(subject.serialize(5)).to be_nil }
+    specify { expect{ subject.serialize('') }.to raise_error ArgumentError }
   end
 end

@@ -1,3 +1,3 @@
-module Activeuuid
-  VERSION = "0.5.0"
+module ActiveUUID
+  VERSION = '0.5.0'
 end
