@@ -13,24 +13,16 @@ class LazyUUID < UUIDTools::UUID
     @lazy_initialized = false
 
     encoded = args.first
-    encoding = encoded.encoding
     length = encoded.length
-    if encoding == Encoding::UTF_8 or encoding == Encoding::US_ASCII
-      if length == 36
-        @string = encoded
-      elsif length == 32
-        @hexdigest = encoded
-      else
-        raise ArgumentError, "Expecting UTF-8 encoded UUID to be 32 or 36 characters, but was #{length}"
-      end
-    elsif encoding == Encoding::ASCII_8BIT
-      if length == 16
-        @raw = encoded
-      else
-        raise ArgumentError, "Expecting ASCII-8BIT encoded UUID to be 16 bytes, but was #{length}"
-      end
+    case length
+    when 36
+      @string = encoded
+    when 32
+      @hexdigest = encoded
+    when 16
+      @raw = encoded
     else
-      raise ArgumentError, "Expecting encoded UUID to be UTF-8 or ASCII-8BIT encoded, but was #{encoding.name}"
+      raise ArgumentError, "Expected UUID to be 16, 32, or 36 character, but was #{length}"
     end
   end
 
