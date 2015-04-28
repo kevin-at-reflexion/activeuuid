@@ -23,6 +23,7 @@ describe UUIDTools::UUID do
     subject { described_class }
     let(:raw) { uuid.raw }
     let(:hex) { uuid.hexdigest }
+    let(:zero) { UUIDTools::UUID.new(0,0,0,0,0,[0,0,0,0,0,0]) }
     let(:lazy) { LazyUUID.new(raw) }
 
     specify { expect(subject.serialize(input)).to eq uuid }
@@ -30,8 +31,8 @@ describe UUIDTools::UUID do
     specify { expect(subject.serialize(lazy)).to eq uuid }
     specify { expect(subject.serialize(hex)).to eq uuid }
     specify { expect(subject.serialize(raw)).to eq uuid }
-    specify { expect(subject.serialize(nil)).to be_nil }
+    specify { expect(subject.serialize('')).to eq zero }
     specify { expect(subject.serialize(5)).to be_nil }
-    specify { expect{ subject.serialize('') }.to raise_error ArgumentError }
+    specify { expect(subject.serialize(nil)).to be_nil }
   end
 end

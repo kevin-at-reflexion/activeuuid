@@ -14,15 +14,14 @@ class LazyUUID < UUIDTools::UUID
 
     encoded = args.first
     length = encoded.length
-    case length
-    when 36
+    if length == 36
       @string = encoded
-    when 32
+    elsif length == 32
       @hexdigest = encoded
-    when 16
-      @raw = encoded
+    elsif length <= 16
+      @raw = encoded.rjust(16, "\0")
     else
-      raise ArgumentError, "Expected UUID to be 16, 32, or 36 character, but was #{length}"
+      raise ArgumentError, "Expected UUID to be 36, 32, or <= 16 characters, but was #{length}"
     end
   end
 
